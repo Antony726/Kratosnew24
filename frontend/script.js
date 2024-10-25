@@ -3,9 +3,14 @@ const resultDiv = document.getElementById('result');
 
 // Function to start the camera
 function startCamera() {
+    // const constraints = {
+    //     video: {
+    //         facingMode: { exact: "environment" } // Request the back camera
+    //     }
+    // };
     const constraints = {
         video: {
-            facingMode: { exact: "environment" } // Request the back camera
+            facingMode: "user" // Request the front camera
         }
     };
 
