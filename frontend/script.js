@@ -1,5 +1,6 @@
 const video = document.getElementById('video');
 const resultDiv = document.getElementById('result');
+let lastScannedCode = null;  // To prevent repeated scans
 
 // Function to start the camera
 function startCamera() {
@@ -28,27 +29,46 @@ function scanQRCode() {
     
     // Set interval to keep capturing frames
     setInterval(() => {
-        // Set canvas dimensions to match video dimensions
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
-        // Draw the video frame to the canvas
+        
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, canvas.width, canvas.height);
-
-        // If a QR code is detected, process it
-        if (code) {
+        
+        if (code && code.data !== lastScannedCode) {
+            lastScannedCode = code.data;
             const qrData = JSON.parse(code.data);
             checkValidity(qrData);
         }
     }, 500); // Adjust the interval as needed
 }
 
+// Button-based manual scan functionality
+document.getElementById('scan-button').addEventListener('click', () => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+    if (code && code.data !== lastScannedCode) {
+        lastScannedCode = code.data;
+        const qrData = JSON.parse(code.data);
+        checkValidity(qrData);
+    } else {
+        alert("No QR code found. Please try again.");
+    }
+});
+
 // Async function to check validity of scanned QR code and send data to backend
 async function checkValidity(qrData) {
     const participantData = {
-        emailID: qrData.teamLeader,  // Assuming teamLeader is unique
+        emailID: qrData.teamLeader,
         eventName: qrData.eventName,
         teamName: qrData.teamName,
         teamLeader: qrData.teamLeader,
@@ -86,5 +106,5 @@ function displayDetails(qrData) {
     `;
 }
 
-// Start scanning when the page loads
+// Start continuous auto-scanning when the page loads
 scanQRCode();
