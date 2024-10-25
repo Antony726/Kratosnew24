@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+#video {
+    border: 1px solid rgb(255, 255, 255);
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 18px;
+}
+.bt{
+    display: flex;
+    justify-content: center;
+}
+#scan-button{
+    margin-top: 5%;
+    display: block;
+    align-items: center;
+    height: 30px;
+    color:white;
+    background-color: red;
+    border: none;
+    border-radius: 5px;
+}
