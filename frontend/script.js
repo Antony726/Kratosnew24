@@ -55,7 +55,7 @@ async function checkValidity(qrData) {
     };
 
     try {
-        const response = await fetch('https://voting-backend-pe3b.onrender.com/add-participant', {
+        const response = await fetch('https://kratosnew24.onrender.com/add-participant', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(participantData)
