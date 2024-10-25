@@ -8,7 +8,6 @@ function startCamera() {
             facingMode: { exact: "environment" } // Request the back camera
         }
     };
-    
 
     navigator.mediaDevices.getUserMedia(constraints)
         .then((stream) => {
@@ -22,27 +21,29 @@ function startCamera() {
 // Start the camera when the page loads
 startCamera();
 
-// Function to capture image and scan QR code
-document.getElementById('scan-button').addEventListener('click', () => {
+// Function to continuously scan QR codes
+function scanQRCode() {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
+    
+    // Set interval to keep capturing frames
+    setInterval(() => {
+        // Set canvas dimensions to match video dimensions
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-    // Set canvas dimensions to match video dimensions
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+        // Draw the video frame to the canvas
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, canvas.width, canvas.height);
 
-    // Draw the video frame to the canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, canvas.width, canvas.height);
-
-    if (code) {
-        const qrData = JSON.parse(code.data);
-        checkValidity(qrData);
-    } else {
-        alert("No QR code found. Please try again.");
-    }
-});
+        // If a QR code is detected, process it
+        if (code) {
+            const qrData = JSON.parse(code.data);
+            checkValidity(qrData);
+        }
+    }, 500); // Adjust the interval as needed
+}
 
 // Async function to check validity of scanned QR code and send data to backend
 async function checkValidity(qrData) {
@@ -84,3 +85,6 @@ function displayDetails(qrData) {
         <p><strong>Team Members:</strong> ${qrData.teamMembers.join(', ')}</p>
     `;
 }
+
+// Start scanning when the page loads
+scanQRCode();
